@@ -1,0 +1,12 @@
+*.log
+.dockerignore
+.git
+.gitignore
+.env*
+build/*
+node_modules
+npm-debug.log*
+README.md
+Dockerfile
+dev.Dockerfile
+prod.Dockerfile
