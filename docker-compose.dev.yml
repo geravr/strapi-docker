@@ -1,0 +1,53 @@
+version: "3.5"
+services:
+  db:
+    image: mysql:8.0.24
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    networks:
+      - strapi_network
+    volumes:
+      - strapi-data:/var/lib/mysql
+    ports:
+      - "3386:3306"
+
+  api:
+    build:
+      context: ./app
+      dockerfile: dev.Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      HOST: ${HOST}
+      PORT: ${PORT}
+      DATABASE_CLIENT: ${DATABASE_CLIENT}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_PORT: ${DATABASE_PORT}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+      - /app/.cache
+      - /app/build
+      - static-files:/app/public
+    ports:
+      - "1337:1337"
+    networks:
+      - strapi_network
+    depends_on:
+      - db
+
+networks:
+  strapi_network:
+
+volumes:
+  strapi-data:
+  static-files:
